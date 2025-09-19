@@ -1,21 +1,23 @@
+import { spawn } from "child_process";
 import fs from "fs";
 import path from "path";
 
-export function crearEstructura(
+export function createStructure(
   basePath: string,
-  estructura: Record<string, any>
+  structure: Record<string, any>
 ) {
-  for (const nombre in estructura) {
-    const ruta = path.join(basePath, nombre);
+  for (const name in structure) {
+    const route = path.join(basePath, name);
 
-    if (typeof estructura[nombre] === "object") {
-      if (!fs.existsSync(ruta)) fs.mkdirSync(ruta);
-      crearEstructura(ruta, estructura[nombre]);
+    if (typeof structure[name] === "object") {
+      if (!fs.existsSync(route)) fs.mkdirSync(route, { recursive: true }); 
+      createStructure(route, structure[name]);
     } else {
-      fs.writeFileSync(ruta, estructura[nombre]);
+      fs.writeFileSync(route, structure[name]);
     }
   }
 }
+
 
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -46,12 +48,12 @@ export function toKebabCase(str: string): string {
     .toLowerCase();
 }
 
-export function injectModuleIntoApp(moduleName: string, singular: string) {
+export function injectModuleIntoApp(moduleName: string, single: string) {
   const appModulePath = path.join(process.cwd(), "src", "app.module.ts");
   let content = fs.readFileSync(appModulePath, "utf-8");
 
   const pascalModule = `${toPascalCase(moduleName)}Module`;
-  const importLine = `import { ${pascalModule} } from './modules/${moduleName}/infrastructure/config/${singular}.module';`;
+  const importLine = `import { ${pascalModule} } from './modules/${moduleName}/infrastructure/config/${single}.module';`;
 
   if (!content.includes(importLine)) {
     content = importLine + "\n" + content;
@@ -67,4 +69,15 @@ export function injectModuleIntoApp(moduleName: string, singular: string) {
   });
 
   fs.writeFileSync(appModulePath, content, "utf-8");
+}
+
+export function spawnPromise(
+  cmd: string,
+  args: string[],
+  opts: any = {}
+): Promise<number> {
+  return new Promise((resolve) => {
+    const child = spawn(cmd, args, { stdio: "inherit", ...opts });
+    child.on("exit", (code) => resolve(code ?? 1));
+  });
 }

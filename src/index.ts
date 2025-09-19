@@ -1,34 +1,22 @@
 #!/usr/bin/env bun
 import * as p from "@clack/prompts";
-import { crearEstructura, injectModuleIntoApp } from "./lib/file-utils";
-import {
-  getMonolitoHexagonalStructure,
-  getMonolitoStructure,
-} from "./lib/structures";
 import path from "path";
-import kleur from "kleur";
+import { createMicroserviceProject } from "./lib/microservice";
+import { createMonolith } from "./lib/monolith";
 
 async function main() {
   const args = process.argv.slice(2);
-  if (args.length === 0) {
-    console.error("❌ Debes pasar el nombre del módulo. Ej: nestmod users");
+  if (!args[0]) {
+    console.error(
+      "❌ Debes pasar el nombre del módulo/directorio. Ej: nestmod users"
+    );
     process.exit(1);
   }
 
-  const moduleName = (args[0] ?? "").toLowerCase();
-  const singular = moduleName.endsWith("s")
-    ? moduleName.slice(0, -1)
-    : moduleName;
+  const moduleDir = args[0].toLowerCase();
+  const targetPath = path.join(process.cwd(), moduleDir);
 
-  const typeStructure = await p.select({
-    message: "¿Qué tipo de arquitectura quieres generar?",
-    options: [
-      { value: "capas", label: "Arquitectura por Capas" },
-      { value: "hexagonal", label: "Arquitectura Hexagonal" },
-    ],
-  });
-
-  const tipo = await p.select({
+  const tipoSelection = await p.select({
     message: "¿Qué tipo de módulo quieres generar?",
     options: [
       { value: "monolito", label: "Monolito" },
@@ -36,69 +24,81 @@ async function main() {
     ],
   });
 
-  if (p.isCancel(tipo)) {
+  if (p.isCancel(tipoSelection)) {
     console.log("❌ Operación cancelada");
     process.exit(0);
   }
 
-  let estructura: Record<string, any> = {};
+  const tipo = tipoSelection as string;
 
-  if (tipo === "monolito") {
-    if (typeStructure === "capas") {
-      estructura = getMonolitoStructure(moduleName, singular);
-    } else if (typeStructure === "hexagonal") {
-      estructura = getMonolitoHexagonalStructure(
-        moduleName,
-        singular,
-        "hexagonal"
-      );
-    }
-  } else if (tipo === "microservicio") {
-    const subTipo = await p.select({
+  if (tipo === "microservicio") {
+    const subTipoSelection = await p.select({
       message: "¿Qué tipo de microservicio quieres generar?",
       options: [
-        { value: "microservice", label: "Microservicio normal" },
-        { value: "config", label: "Configuración / Config" },
+        { value: "microservice", label: "Módulo de microservicio" },
         { value: "api-gateway", label: "API Gateway" },
       ],
     });
 
-    if (p.isCancel(subTipo)) {
+    if (p.isCancel(subTipoSelection)) {
       console.log("❌ Operación cancelada");
       process.exit(0);
     }
 
-    switch (subTipo) {
-      case "microservice":
-        console.log("🚀 Microservicio normal seleccionado");
-        break;
-      case "config":
-        console.log("⚙️ Config seleccionado");
-        break;
-      case "api-gateway":
-        console.log("🌐 API Gateway seleccionado");
-        break;
-    }
-  }
+    const subTipo = subTipoSelection as string;
 
-  crearEstructura(process.cwd(), estructura);
-
-  const modulePath = path.join(process.cwd(), "src", "modules", moduleName);
-
-  if (typeStructure === "hexagonal" && tipo === "monolito") {
-    injectModuleIntoApp(moduleName, singular);
-    const moduleClass =
-      singular.charAt(0).toUpperCase() + singular.slice(1) + "Module";
-
-    console.log(
-        kleur.cyan().bold(`El módulo ${moduleClass} fue generado correctamente en ${modulePath}`)
+    if (subTipo === "api-gateway") {
+      console.log("🚀 Has seleccionado API Gateway");
+      await createMicroserviceProject(
+        moduleDir,
+        targetPath,
+        subTipo,
       );
+      return;
+    }
 
-    console.log(
-      kleur.green().bold(`${moduleClass} agregado correctamente a AppModule`)
-    );
+    let transportType: "NATS" | "TCP" = "NATS";
+    if (subTipo === "microservice") {
+      const transportSelection = await p.select({
+        message: "Selecciona el tipo de transporte:",
+        options: [
+          { value: "NATS", label: "NATS" },
+          { value: "TCP", label: "TCP" },
+        ],
+      });
+
+      if (p.isCancel(transportSelection)) {
+        console.log("❌ Operación cancelada");
+        process.exit(0);
+      }
+
+      transportType = transportSelection as "NATS" | "TCP";
+      await createMicroserviceProject(
+        moduleDir,
+        targetPath,
+        subTipo,
+        transportType
+      );
+    }
+
+   
+  } else {
+    const typeStructureSelection = await p.select({
+      message: "¿Qué tipo de arquitectura quieres generar?",
+      options: [
+        { value: "capas", label: "Arquitectura por Capas" },
+        { value: "hexagonal", label: "Arquitectura Hexagonal" },
+      ],
+    });
+
+    if (p.isCancel(typeStructureSelection)) {
+      console.log("❌ Operación cancelada");
+      process.exit(0);
+    }
+
+    const typeStructure = typeStructureSelection as string;
+    await createMonolith(moduleDir, typeStructure, targetPath);
   }
- 
 }
 
 main();

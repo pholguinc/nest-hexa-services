@@ -1,6 +1,6 @@
 {
   "name": "nest-hexa-services",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI para generar módulos NestJS con arquitectura hexagonal o por capas",
   "type": "module",
   "private": false,
@@ -23,5 +23,6 @@
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5.6.0"
-  }
+  },
+  "license": "MIT"
 }

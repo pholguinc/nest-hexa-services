@@ -1,7 +1,7 @@
 import { camelCase, capitalize, toKebabCase, toPascalCase } from "./file-utils";
 export function nestControllerTemplate(
   moduleName: string,
-  singular: string,
+  single: string,
   tipo: "monolito" | "hexagonal"
 ) {
   const className = `${toPascalCase(moduleName)}Controller`;
@@ -15,7 +15,7 @@ export class ${className} {
 }
 `;
   } else {
-    const serviceName = `${capitalize(singular)}Service`;
+    const serviceName = `${capitalize(single)}Service`;
     return `import { Controller } from '@nestjs/common';
 import { ${serviceName} } from './${moduleName}.service';
 
@@ -38,8 +38,8 @@ export class ${className} {
 `;
 }
 
-export function nestServiceTemplate(moduleName: string, singular: string) {
-  const className = `${capitalize(singular)}Service`;
+export function nestServiceTemplate(moduleName: string, single: string) {
+  const className = `${capitalize(single)}Service`;
   const repositoryClassName = `${capitalize(moduleName)}Repository`;
   const repositoryPropName = `${camelCase(moduleName)}Repository`;
 
@@ -53,7 +53,7 @@ export class ${className} {
 `;
 }
 
-export function nestModuleTemplate(moduleName: string, singular: string) {
+export function nestModuleTemplate(moduleName: string, single: string) {
   const moduleClassName = `${toPascalCase(moduleName)}Module`;
 
   return `import { Module } from '@nestjs/common';
@@ -88,27 +88,27 @@ export class ${pascalModule}${pascalAction}UseCase {
 
 
 
-export function nestEntityTemplate(singular: string) {
-  const pascalSingular = toPascalCase(singular);
+export function nestEntityTemplate(single: string) {
+  const pascalSingle = toPascalCase(single);
 
-  return `export class ${pascalSingular}Entity {
+  return `export class ${pascalSingle}Entity {
   constructor() {}
 }
 `;
 }
 
-export function nestPortTemplate(singular: string) {
-  const pascalSingular = toPascalCase(singular);
+export function nestPortTemplate(single: string) {
+  const pascalSingle = toPascalCase(single);
 
-  return `export abstract class ${pascalSingular}RepositoryPort {
+  return `export abstract class ${pascalSingle}RepositoryPort {
 }
 `;
 }
 
-export function nestImplementsTemplate(singular: string) {
-  const pascalSingular = toPascalCase(singular);
-  const interfaceName = `${pascalSingular}RepositoryPort`;
-  const fileName = `${singular}.repository.port`;
+export function nestImplementsTemplate(single: string) {
+  const pascalSingle = toPascalCase(single);
+  const interfaceName = `${pascalSingle}RepositoryPort`;
+  const fileName = `${single}.repository.port`;
   return `import { Injectable } from '@nestjs/common';
 import { ${interfaceName} } from '../ports/${fileName}';
 
@@ -119,25 +119,25 @@ export class ${interfaceName}Impl implements ${interfaceName} {
 `;
 }
 
-export function nestConfigTemplate(singular: string) {
-  const pascalSingular = toPascalCase(singular);
+export function nestConfigTemplate(single: string) {
+  const pascalSingle = toPascalCase(single);
 
   return `
-export class ${pascalSingular}Config {
+export class ${pascalSingle}Config {
 }
 `;
 }
 
 
 
-export function nestFactoryTemplate(singular: string) {
-  const pascalSingular = toPascalCase(singular);
+export function nestFactoryTemplate(single: string) {
+  const pascalSingle = toPascalCase(single);
 
-  return `import { ${pascalSingular}Entity } from "../entities/${singular}.entity";
+  return `import { ${pascalSingle}Entity } from "../entities/${single}.entity";
 
-export class ${pascalSingular}Factory {
-  static createFromPrisma(data: any): ${pascalSingular}Entity {
-    return new ${pascalSingular}Entity(
+export class ${pascalSingle}Factory {
+  static createFromPrisma(data: any): ${pascalSingle}Entity {
+    return new ${pascalSingle}Entity(
       // data.id,
       // data.name,
     );
@@ -147,7 +147,7 @@ export class ${pascalSingular}Factory {
 }
 
 export function nestServicesHexagonalTemplate(
-  singular: string,
+  single: string,
   type:
     | "create"
     | "update"
@@ -156,11 +156,11 @@ export function nestServicesHexagonalTemplate(
     | "findList"
     | "findOne"
 ) {
-  const pascalSingular = toPascalCase(singular);
+  const pascalSingle = toPascalCase(single);
   const action = capitalize(type);
-  const className = `${action}${pascalSingular}Service`;
-  const interfaceName = `I${action}${pascalSingular}`;
-  const fileName = `${toKebabCase(type)}-${singular}.interface`;
+  const className = `${action}${pascalSingle}Service`;
+  const interfaceName = `I${action}${pascalSingle}`;
+  const fileName = `${toKebabCase(type)}-${single}.interface`;
 
   return `import { Injectable } from '@nestjs/common';
   import { ${interfaceName} } from '../../interfaces/${fileName}';
