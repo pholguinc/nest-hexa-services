@@ -4,7 +4,13 @@ import {
   nestServiceTemplate,
   nestRepositoryTemplate,
   nestModuleTemplate,
-  nestControllerHexTemplate,
+  nestUseCaseTemplate,
+  nestFactoryTemplate,
+  nestServicesHexagonalTemplate,
+  nestEntityTemplate,
+  nestPortTemplate,
+  nestImplementsTemplate,
+  nestConfigTemplate,
 } from "./templates";
 
 export function getMonolitoStructure(moduleName: string, singular: string) {
@@ -26,13 +32,12 @@ export function getMonolitoStructure(moduleName: string, singular: string) {
           controllers: {
             [`${moduleName}.controller.ts`]: nestControllerTemplate(
               moduleName,
-              singular
+              singular,
+              "monolito"
             ),
           },
           repositories: {
-            [`${moduleName}.repository.ts`]: nestRepositoryTemplate(
-              moduleName,
-            ),
+            [`${moduleName}.repository.ts`]: nestRepositoryTemplate(moduleName),
           },
           services: {
             [`${moduleName}.service.ts`]: nestServiceTemplate(
@@ -48,7 +53,11 @@ export function getMonolitoStructure(moduleName: string, singular: string) {
   };
 }
 
-export function getMonolitoHexagonalStructure(moduleName: string, singular: string) {
+export function getMonolitoHexagonalStructure(
+  moduleName: string,
+  singular: string,
+  tipo: "monolito" | "hexagonal" = "hexagonal"
+) {
   const pascalSingular = toPascalCase(singular);
 
   return {
@@ -65,26 +74,90 @@ export function getMonolitoHexagonalStructure(moduleName: string, singular: stri
                 [`${singular}.response.dto.ts`]: `export class ${pascalSingular}ResponseDto {}`,
               },
             },
-            useCases: {
-              commands: {},
-              queries: {},
+            "use-cases": {
+              commands: {
+                [`create-${singular}.use-case.ts`]: nestUseCaseTemplate(
+                  moduleName,
+                  "create"
+                ),
+                [`update-${singular}.use-case.ts`]: nestUseCaseTemplate(
+                  moduleName,
+                  "update"
+                ),
+                [`update-status-${singular}.use-case.ts`]: nestUseCaseTemplate(
+                  moduleName,
+                  "updateStatus"
+                ),
+              },
+              queries: {
+                [`find-all-${singular}.use-case.ts`]: nestUseCaseTemplate(
+                  moduleName,
+                  "findAll"
+                ),
+                [`find-list-${singular}.use-case.ts`]: nestUseCaseTemplate(
+                  moduleName,
+                  "findList"
+                ),
+                [`find-one-${singular}.use-case.ts`]: nestUseCaseTemplate(
+                  moduleName,
+                  "findOne"
+                ),
+              },
             },
           },
           domain: {
-            entities: {},
-            factories: {},
-            interfaces: {},
-            services: {},
+            entities: {
+              [`${singular}.entity.ts`]: nestEntityTemplate(moduleName),
+            },
+            factories: {
+              [`${singular}.factory.ts`]: nestFactoryTemplate(singular),
+            },
+            interfaces: {
+              [`create-${singular}.interface.ts`]: `export interface ICreate${pascalSingular} {}`,
+              [`update-${singular}.interface.ts`]: `export interface IUpdate${pascalSingular} {}`,
+              [`update-status-${singular}.interface.ts`]: `export interface IUpdateStatus${pascalSingular} {}`,
+              [`find-all-${singular}.interface.ts`]: `export interface IFindAll${pascalSingular} {}`,
+              [`find-list-${singular}.interface.ts`]: `export interface IFindList${pascalSingular} {}`,
+              [`find-one-${singular}.interface.ts`]: `export interface IFindOne${pascalSingular} {}`,
+            },
+            services: {
+              commands: {
+                [`create-${singular}.service.ts`]:
+                  nestServicesHexagonalTemplate(singular, "create"),
+                [`update-${singular}.service.ts`]:
+                  nestServicesHexagonalTemplate(singular, "update"),
+                [`update-status-${singular}.service.ts`]:
+                  nestServicesHexagonalTemplate(singular, "updateStatus"),
+              },
+              queries: {
+                [`find-all-${singular}.service.ts`]:
+                  nestServicesHexagonalTemplate(singular, "findAll"),
+                [`find-list-${singular}.service.ts`]:
+                  nestServicesHexagonalTemplate(singular, "findList"),
+                [`find-one-${singular}.service.ts`]:
+                  nestServicesHexagonalTemplate(singular, "findOne"),
+              },
+            },
           },
           infrastructure: {
             adapters: {
-              implements: {},
-              ports: {},
+              implements: {
+                [`${singular}.repository.impl.ts`]:
+                  nestImplementsTemplate(singular),
+              },
+              ports: {
+                [`${singular}.repository.port.ts`]: nestPortTemplate(singular),
+              },
             },
-            config: {},
+            config: {
+              [`${singular}.config.ts`]: nestConfigTemplate(singular),
+              [`${singular}.module.ts`]: nestModuleTemplate(moduleName, singular),
+            },
             controllers: {
-              [`${moduleName}.controller.ts`]: nestControllerHexTemplate(
+              [`${moduleName}.controller.ts`]: nestControllerTemplate(
                 moduleName,
+                singular,
+                tipo
               ),
             },
           },
@@ -104,7 +177,8 @@ export function getMicroservicioStructure(
         main: {
           [`${moduleName}.controller.ts`]: nestControllerTemplate(
             moduleName,
-            singular
+            singular,
+            "monolito"
           ),
           [`${moduleName}.service.ts`]: nestServiceTemplate(
             moduleName,
@@ -124,3 +198,4 @@ export function getMicroservicioStructure(
     },
   };
 }
+

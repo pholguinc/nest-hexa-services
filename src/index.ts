@@ -1,7 +1,12 @@
 #!/usr/bin/env bun
 import * as p from "@clack/prompts";
-import { crearEstructura } from "./lib/file-utils";
-import { getMonolitoHexagonalStructure, getMonolitoStructure } from "./lib/structures";
+import { crearEstructura, injectModuleIntoApp } from "./lib/file-utils";
+import {
+  getMonolitoHexagonalStructure,
+  getMonolitoStructure,
+} from "./lib/structures";
+import path from "path";
+import kleur from "kleur";
 
 async function main() {
   const args = process.argv.slice(2);
@@ -42,7 +47,11 @@ async function main() {
     if (typeStructure === "capas") {
       estructura = getMonolitoStructure(moduleName, singular);
     } else if (typeStructure === "hexagonal") {
-      estructura = getMonolitoHexagonalStructure(moduleName, singular);
+      estructura = getMonolitoHexagonalStructure(
+        moduleName,
+        singular,
+        "hexagonal"
+      );
     }
   } else if (tipo === "microservicio") {
     const subTipo = await p.select({
@@ -74,9 +83,22 @@ async function main() {
 
   crearEstructura(process.cwd(), estructura);
 
-  console.log(
-    `✅ Módulo NestJS "${moduleName}" generado como ${tipo} con éxito!`
-  );
+  const modulePath = path.join(process.cwd(), "src", "modules", moduleName);
+
+  if (typeStructure === "hexagonal" && tipo === "monolito") {
+    injectModuleIntoApp(moduleName, singular);
+    const moduleClass =
+      singular.charAt(0).toUpperCase() + singular.slice(1) + "Module";
+
+    console.log(
+        kleur.cyan().bold(`El módulo ${moduleClass} fue generado correctamente en ${modulePath}`)
+      );
+
+    console.log(
+      kleur.green().bold(`${moduleClass} agregado correctamente a AppModule`)
+    );
+  }
+ 
 }
 
 main();
