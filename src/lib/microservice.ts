@@ -12,7 +12,6 @@ export async function createMicroserviceProject(
 ) {
   console.log(`🚀 Creando proyecto NestJS (${subTipo}) en: ${targetPath}`);
 
-  // Crear proyecto con CLI Nest
   const code = await spawnPromise("nest", ["new", name, "--skip-install"], {
     cwd: process.cwd(),
   });
@@ -20,14 +19,12 @@ export async function createMicroserviceProject(
 
   console.log(kleur.green().bold(`✅ Proyecto creado en ${targetPath}`));
 
-  // Instalar @nestjs/microservices y dependencias de config
   await spawnPromise(
     "pnpm",
     ["add", "@nestjs/microservices", "joi", "dotenv"],
     { cwd: targetPath }
   );
 
-  // Limpiar AppModule
   const appModulePath = path.join(targetPath, "src", "app.module.ts");
   fs.writeFileSync(
     appModulePath,
@@ -85,7 +82,6 @@ bootstrap();
     "utf-8"
   );
 
-  // Generar carpeta y archivos de configuración
   generateConfig(targetPath, transportType);
 
   console.log(

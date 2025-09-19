@@ -97,7 +97,6 @@ export const envs = {
 };
 `;
 
-    // Contenido .env
     envFileContent = `PORT=3000
 DATABASE_URL=
 JWT_SECRET=TU_TOKEN_SECRET
@@ -105,10 +104,8 @@ TCP_SERVER=127.0.0.1:4000
 `;
   }
 
-  // Escribir envs.ts
   fs.writeFileSync(path.join(configPath, "envs.ts"), envsContent, "utf-8");
 
-  // services.ts
   fs.writeFileSync(
     path.join(configPath, "services.ts"),
     transport === "NATS"
@@ -117,14 +114,12 @@ TCP_SERVER=127.0.0.1:4000
     "utf-8"
   );
 
-  // index.ts
   fs.writeFileSync(
     path.join(configPath, "index.ts"),
     `export * from './envs';\nexport * from './services';`,
     "utf-8"
   );
 
-  // .env
   fs.writeFileSync(path.join(targetPath, ".env"), envFileContent, "utf-8");
 
   console.log(

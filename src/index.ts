@@ -17,15 +17,15 @@ async function main() {
   const targetPath = path.join(process.cwd(), moduleDir);
 
   const tipoSelection = await p.select({
-    message: "¿Qué tipo de módulo quieres generar?",
+    message: "What type of module do you want to generate?",
     options: [
-      { value: "monolito", label: "Monolito" },
-      { value: "microservicio", label: "Microservicio" },
+      { value: "monolito", label: "Monolith" },
+      { value: "microservicio", label: "Microservice" },
     ],
   });
 
   if (p.isCancel(tipoSelection)) {
-    console.log("❌ Operación cancelada");
+    console.log("❌ Operation cancelled");
     process.exit(0);
   }
 
@@ -33,22 +33,21 @@ async function main() {
 
   if (tipo === "microservicio") {
     const subTipoSelection = await p.select({
-      message: "¿Qué tipo de microservicio quieres generar?",
+      message: "What type of microservice do you want to build?",
       options: [
-        { value: "microservice", label: "Módulo de microservicio" },
+        { value: "microservice", label: "Microservice Module" },
         { value: "api-gateway", label: "API Gateway" },
       ],
     });
 
     if (p.isCancel(subTipoSelection)) {
-      console.log("❌ Operación cancelada");
+      console.log("❌ Operation cancelled");
       process.exit(0);
     }
 
     const subTipo = subTipoSelection as string;
 
     if (subTipo === "api-gateway") {
-      console.log("🚀 Has seleccionado API Gateway");
       await createMicroserviceProject(
         moduleDir,
         targetPath,
@@ -60,7 +59,7 @@ async function main() {
     let transportType: "NATS" | "TCP" = "NATS";
     if (subTipo === "microservice") {
       const transportSelection = await p.select({
-        message: "Selecciona el tipo de transporte:",
+        message: "Select the type of transport:",
         options: [
           { value: "NATS", label: "NATS" },
           { value: "TCP", label: "TCP" },
@@ -68,7 +67,7 @@ async function main() {
       });
 
       if (p.isCancel(transportSelection)) {
-        console.log("❌ Operación cancelada");
+        console.log("❌ Operation cancelled");
         process.exit(0);
       }
 
@@ -84,15 +83,15 @@ async function main() {
    
   } else {
     const typeStructureSelection = await p.select({
-      message: "¿Qué tipo de arquitectura quieres generar?",
+      message: "What type of architecture do you want to generate?",
       options: [
-        { value: "capas", label: "Arquitectura por Capas" },
-        { value: "hexagonal", label: "Arquitectura Hexagonal" },
+        { value: "capas", label: "Layered Architecture" },
+        { value: "hexagonal", label: "Hexagonal Architecture" },
       ],
     });
 
     if (p.isCancel(typeStructureSelection)) {
-      console.log("❌ Operación cancelada");
+      console.log("❌ Operation cancelled");
       process.exit(0);
     }
 
