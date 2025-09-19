@@ -1,6 +1,6 @@
 # nest-hexa-services
 
-This package is designed to automate the process of creating and configuring architectures for your NestJS backend.
+This package is designed to automate the process of creating and configuring architectures for your NestJS backend, tomando base del paquete de [hexa-mod](https://www.npmjs.com/package/hexa-mod).
 
 It consists of 2 parts that define whether the project will be Monolithic or Microservice. In turn, it is divided into 2 parts, which are the following:
 
@@ -21,7 +21,7 @@ The hexagonal architecture is a little more specific in that it entails each mod
 <img width="668" height="865" alt="image" src="https://i.imgur.com/tzEJfFJ.png" />
 
 
-## MicroServicios
+## MicroServices
 
 In this part it allows us to create microservices with nestjs in addition to being able to 2 types of configurations, the microservice itself and the Api Gateway.
 
