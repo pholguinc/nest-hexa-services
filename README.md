@@ -3,7 +3,7 @@
 This package is designed to automate the process of creating and configuring architectures for your NestJS backend, based on the [hexa-mod](https://www.npmjs.com/package/hexa-mod) package.
 
 
-## Changelog 1.0.7
+## Changelog 1.0.8
 
 - Added support and validate NestJS CLI
 
