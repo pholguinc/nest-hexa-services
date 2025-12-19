@@ -31,11 +31,11 @@ The hexagonal architecture is a little more specific in that it entails each mod
 
 In this part it allows us to create microservices with nestjs in addition to being able to 2 types of configurations, the microservice itself and the Api Gateway.
 
-<img width="605" height="115" alt="image" src="https://i.imgur.com/z8bBIUq.png" />
+<img width="605" height="115" alt="image" src="https://i.imgur.com/WIK31oy.png" />
 
 And finally, you can choose the transport medium in which the microservices will communicate, which are TCP or NATS.
 
-<img width="478" height="82" alt="image" src="https://i.imgur.com/7ftDShO.png" />
+<img width="478" height="82" alt="image" src="https://i.imgur.com/gtFSt6m.png" />
 
 ## Usage
 
