@@ -1,6 +1,47 @@
-import { spawn } from "child_process";
+import { spawn, execSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import * as p from "@clack/prompts";
+import kleur from "kleur";
+
+export function isNestCliInstalled(): boolean {
+  try {
+    execSync("nest --version", { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function ensureNestCli(): Promise<boolean> {
+  if (isNestCliInstalled()) {
+    return true;
+  }
+
+  console.log(kleur.yellow().bold("⚠️  NestJS CLI no está instalado."));
+
+  const shouldInstall = await p.confirm({
+    message: "¿Deseas instalar NestJS CLI globalmente?",
+    initialValue: true,
+  });
+
+  if (p.isCancel(shouldInstall) || !shouldInstall) {
+    console.log(kleur.red().bold("❌ No se puede continuar sin NestJS CLI."));
+    return false;
+  }
+
+  console.log(kleur.cyan().bold("📦 Instalando @nestjs/cli globalmente..."));
+
+  const code = await spawnPromise("npm", ["install", "-g", "@nestjs/cli"]);
+
+  if (code !== 0) {
+    console.log(kleur.red().bold("❌ Error al instalar NestJS CLI."));
+    return false;
+  }
+
+  console.log(kleur.green().bold("✅ NestJS CLI instalado correctamente."));
+  return true;
+}
 
 export function createStructure(
   basePath: string,
@@ -10,7 +51,7 @@ export function createStructure(
     const route = path.join(basePath, name);
 
     if (typeof structure[name] === "object") {
-      if (!fs.existsSync(route)) fs.mkdirSync(route, { recursive: true }); 
+      if (!fs.existsSync(route)) fs.mkdirSync(route, { recursive: true });
       createStructure(route, structure[name]);
     } else {
       fs.writeFileSync(route, structure[name]);
@@ -44,7 +85,7 @@ export function toPascalCase(str?: string): string {
 export function toKebabCase(str: string): string {
   return str
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/[\s_]+/g, "-") 
+    .replace(/[\s_]+/g, "-")
     .toLowerCase();
 }
 

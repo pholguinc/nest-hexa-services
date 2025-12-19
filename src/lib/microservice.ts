@@ -1,15 +1,20 @@
 import fs from "fs";
 import path from "path";
 import kleur from "kleur";
-import { spawnPromise } from "./file-utils";
+import { spawnPromise, ensureNestCli } from "./file-utils";
 import { generateConfig } from "./config";
 
 export async function createMicroserviceProject(
   name: string,
   targetPath: string,
   subTipo: string,
-  transportType: "NATS" | "TCP" = "NATS" 
+  transportType: "NATS" | "TCP" = "NATS"
 ) {
+  const nestCliReady = await ensureNestCli();
+  if (!nestCliReady) {
+    process.exit(1);
+  }
+
   console.log(`🚀 Creando proyecto NestJS (${subTipo}) en: ${targetPath}`);
 
   const code = await spawnPromise("nest", ["new", name, "--skip-install"], {
@@ -98,6 +103,11 @@ export async function createMicroserviceApiGatewayProject(
   subTipo: string,
   transportType: "NATS" | "TCP" = "NATS"
 ) {
+  const nestCliReady = await ensureNestCli();
+  if (!nestCliReady) {
+    process.exit(1);
+  }
+
   console.log(`🚀 Creando proyecto NestJS (${subTipo}) en: ${targetPath}`);
 
   const code = await spawnPromise("nest", ["new", name], {

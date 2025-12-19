@@ -2,6 +2,12 @@
 
 This package is designed to automate the process of creating and configuring architectures for your NestJS backend, based on the [hexa-mod](https://www.npmjs.com/package/hexa-mod) package.
 
+
+## Changelog 1.0.7
+
+- Added support and validate NestJS CLI
+
+
 It consists of 2 parts that define whether the project will be Monolithic or Microservice. In turn, it is divided into 2 parts, which are the following:
 
 ## Architecture distribution
